@@ -22,6 +22,10 @@ inputs:
     description: 'Include a table of contents generated from headings'
     required: false
     default: 'true'
+  github-token:
+    description: 'Token used to push the generated site to the Pages branch'
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: 'docker'

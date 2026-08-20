@@ -40,6 +40,16 @@ async function run() {
     const outputDir = core.getInput('output-dir') || 'site';
     const branch = core.getInput('branch') || 'gh-pages';
     const includeToc = core.getInput('include-toc') !== 'false';
+    const githubToken = core.getInput('github-token') || process.env.GITHUB_TOKEN;
+
+    if (githubToken) {
+      process.env.GITHUB_TOKEN = githubToken;
+    } else {
+      core.setFailed(
+        'GITHUB_TOKEN is missing. The workflow needs permissions: contents: write, and the action must receive github.token.'
+      );
+      process.exit(1);
+    }
 
     const absoluteReadmePath = path.resolve(process.cwd(), readmePath);
 

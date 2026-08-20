@@ -38,6 +38,7 @@ Enable GitHub Pages in your repository settings and set the source to the `gh-pa
 | `output-dir` | Directory for generated site files | `site` |
 | `branch` | Branch to publish to | `gh-pages` |
 | `include-toc` | Include table of contents | `true` |
+| `github-token` | Token used to push the site | `${{ github.token }}` |
 
 ## How it works
 

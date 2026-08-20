@@ -21,8 +21,9 @@ async function run(command, args, options = {}) {
 }
 
 async function configureGit() {
-  await exec.exec('git', ['config', 'user.name', 'github-actions[bot]']);
-  await exec.exec('git', ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
+  await exec.exec('git', ['config', '--global', '--add', 'safe.directory', '*']);
+  await exec.exec('git', ['config', '--global', 'user.name', 'github-actions[bot]']);
+  await exec.exec('git', ['config', '--global', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
 }
 
 function getRemoteUrl() {
