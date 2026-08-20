@@ -16,6 +16,12 @@ const ALLOWED_TAGS = [
 const ALLOWED_ATTRIBUTES = {
   a: ['href', 'title', 'target', 'rel'],
   img: ['src', 'alt', 'title', 'width', 'height'],
+  h1: ['id'],
+  h2: ['id'],
+  h3: ['id'],
+  h4: ['id'],
+  h5: ['id'],
+  h6: ['id'],
   th: ['align'],
   td: ['align'],
   code: ['class'],
@@ -23,6 +29,10 @@ const ALLOWED_ATTRIBUTES = {
   span: ['class'],
   div: ['class']
 };
+
+function isInternalHref(href) {
+  return typeof href === 'string' && (href.startsWith('#') || href.startsWith('/'));
+}
 
 function sanitize(html) {
   if (!html || typeof html !== 'string') {
@@ -34,17 +44,32 @@ function sanitize(html) {
     allowedAttributes: ALLOWED_ATTRIBUTES,
     allowedSchemes: ['http', 'https', 'mailto'],
     allowedSchemesByTag: {
+      a: ['http', 'https', 'mailto'],
       img: ['http', 'https']
     },
     transformTags: {
-      a: (tagName, attribs) => ({
-        tagName,
-        attribs: {
-          ...attribs,
-          rel: 'noopener noreferrer',
-          target: attribs.target || '_blank'
+      a: (tagName, attribs) => {
+        const href = attribs.href || '';
+
+        if (isInternalHref(href)) {
+          return {
+            tagName,
+            attribs: {
+              href,
+              title: attribs.title
+            }
+          };
         }
-      })
+
+        return {
+          tagName,
+          attribs: {
+            ...attribs,
+            rel: 'noopener noreferrer',
+            target: attribs.target || '_blank'
+          }
+        };
+      }
     }
   });
 

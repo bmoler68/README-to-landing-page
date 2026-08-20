@@ -19,6 +19,13 @@ describe('sanitize', () => {
     const result = sanitize('<p>Hello <strong>world</strong></p>');
     assert.equal(result, '<p>Hello <strong>world</strong></p>');
   });
+
+  it('preserves heading ids and in-page anchor hrefs', () => {
+    const result = sanitize('<h2 id="quick-start">Quick Start</h2><p><a href="#quick-start">Jump</a></p>');
+    assert.ok(result.includes('id="quick-start"'));
+    assert.ok(result.includes('href="#quick-start"'));
+    assert.ok(!result.includes('target="_blank"'));
+  });
 });
 
 describe('escapeHtml', () => {
@@ -135,6 +142,28 @@ describe('generateSite', () => {
     assert.ok(html.includes('Test Project'));
     assert.ok(html.includes('Hello world'));
     assert.ok(html.includes('styles.css'));
+
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  });
+
+  it('keeps table of contents hrefs matching heading ids', () => {
+    const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'readme-site-'));
+    const doc = parseReadme('# Test Project\n\n## Quick Start\n\nHello.\n\n### Installation\n\nWorld.');
+    const templateDir = path.join(__dirname, '..', 'templates');
+
+    const result = generateSite(doc, {
+      outputDir,
+      templateDir,
+      repoUrl: 'https://github.com/test/repo',
+      repoName: 'test/repo',
+      includeToc: true
+    });
+
+    const html = fs.readFileSync(result.indexPath, 'utf8');
+    assert.ok(html.includes('href="#quick-start"'));
+    assert.ok(html.includes('id="quick-start"'));
+    assert.ok(html.includes('href="#installation"'));
+    assert.ok(html.includes('id="installation"'));
 
     fs.rmSync(outputDir, { recursive: true, force: true });
   });
