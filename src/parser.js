@@ -139,8 +139,22 @@ function extractBadges(nodes) {
   return { badges, contentNodes: nodes.slice(index) };
 }
 
+function createFallbackDocument(markdown, fallbackTitle) {
+  return {
+    type: 'document',
+    title: fallbackTitle,
+    badges: [],
+    sections: [{ type: 'paragraph', text: markdown, raw: markdown }],
+    fallback: true
+  };
+}
+
 function parseReadme(markdown, options = {}) {
   const fallbackTitle = options.fallbackTitle || 'Project';
+
+  if (!markdown || !markdown.trim()) {
+    return createFallbackDocument(markdown, fallbackTitle);
+  }
 
   try {
     const lexer = new Lexer();
@@ -160,13 +174,7 @@ function parseReadme(markdown, options = {}) {
     };
   } catch (error) {
     console.warn(`Markdown parsing failed, falling back to raw text: ${error.message}`);
-    return {
-      type: 'document',
-      title: fallbackTitle,
-      badges: [],
-      sections: [{ type: 'paragraph', text: markdown, raw: markdown }],
-      fallback: true
-    };
+    return createFallbackDocument(markdown, fallbackTitle);
   }
 }
 
