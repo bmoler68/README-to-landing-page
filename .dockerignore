@@ -1,0 +1,12 @@
+node_modules
+.git
+.github
+dist
+site
+.gh-pages-work
+test
+examples
+Requirements
+*.md
+!README.md
+LICENSE

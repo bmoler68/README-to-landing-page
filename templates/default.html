@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{description}}">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <h1 class="hero-title">{{title}}</h1>
+      {{badges}}
+      <p class="hero-subtitle">
+        <a href="{{repoUrl}}" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    {{toc}}
+    <article class="content">
+      {{content}}
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      {{footer}}
+    </div>
+  </footer>
+</body>
+</html>

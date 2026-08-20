@@ -1,0 +1,21 @@
+{
+  "name": "readme-to-landing-page",
+  "version": "1.0.0",
+  "description": "GitHub Action that converts README.md into a static landing page and deploys to GitHub Pages",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "github-action",
+    "github-pages",
+    "readme",
+    "landing-page"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "marked": "^15.0.6",
+    "sanitize-html": "^2.14.0"
+  }
+}

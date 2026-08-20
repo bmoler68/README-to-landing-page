@@ -1,0 +1,103 @@
+# README to Landing Page
+
+A zero-configuration GitHub Action that converts your repository's `README.md` into a polished static landing page and deploys it to GitHub Pages.
+
+This action is delivered as a **Docker container** — GitHub builds the image from the `Dockerfile` on each run. No container registry (GHCR) is required.
+
+## For adopters (30-second setup)
+
+Add this workflow to your repository at `.github/workflows/landing-page.yml`:
+
+```yaml
+name: Build Landing Page
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bmoler68/readme-to-landing-page@v1
+```
+
+Enable GitHub Pages in your repository settings and set the source to the `gh-pages` branch. No CLI, no configuration, no local tooling required.
+
+## Inputs
+
+| Input | Description | Default |
+|-------|-------------|---------|
+| `readme-path` | Path to the README file | `README.md` |
+| `output-dir` | Directory for generated site files | `site` |
+| `branch` | Branch to publish to | `gh-pages` |
+| `include-toc` | Include table of contents | `true` |
+
+## How it works
+
+```
+README.md → Parser → AST → Generator → gh-pages branch → GitHub Pages
+```
+
+When a workflow invokes this action, GitHub:
+
+1. Checks out this action repo at the referenced tag (e.g. `@v1`)
+2. **Builds the Docker image** from the `Dockerfile` (cached when possible)
+3. Runs the container against the target repository workspace
+4. The container parses `README.md`, generates HTML, and pushes to `gh-pages`
+
+Generated site structure:
+
+```
+gh-pages branch:
+├── index.html
+├── styles.css
+└── assets/
+```
+
+## Maintaining this action (CI-only)
+
+This repository requires **zero local tooling**. You do not need Node.js, npm, or Docker installed on your machine.
+
+| You do | CI does |
+|--------|---------|
+| Edit source files on GitHub (web editor, Codespaces, or git push) | Run unit tests |
+| Open pull requests | Verify the Docker image builds |
+| Tag releases (`v1`, `v1.0.0`) | — |
+
+There is no `dist/` folder, no bundled JavaScript, and no container registry to manage. The Dockerfile **is** the deliverable — GitHub builds it fresh on each execution.
+
+### Release workflow
+
+1. Make changes to `src/`, `templates/`, or `Dockerfile`
+2. Push to `main` — CI validates tests and Docker build
+3. Create a git tag (e.g. `v1.0.0`)
+4. Consumers reference `@v1` or `@v1.0.0`
+
+## Project structure
+
+```
+├── action.yml              # Points to Dockerfile
+├── Dockerfile              # Built by GitHub on each action run
+├── src/
+│   ├── index.js            # Entry point
+│   ├── parser.js           # Markdown → AST
+│   ├── generator.js        # AST → HTML
+│   ├── publisher.js        # gh-pages deployment
+│   └── utils/sanitize.js   # HTML sanitization
+├── templates/
+│   ├── default.html
+│   └── styles.css
+├── test/
+└── .github/workflows/ci.yml
+```
+
+## License
+
+MIT

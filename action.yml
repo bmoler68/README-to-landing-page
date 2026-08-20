@@ -1,0 +1,28 @@
+name: 'README to Landing Page'
+description: 'Convert README.md into a polished static landing page and deploy to GitHub Pages'
+author: 'readme-to-landing-page'
+branding:
+  icon: 'file-text'
+  color: 'blue'
+
+inputs:
+  readme-path:
+    description: 'Path to the README file relative to repository root'
+    required: false
+    default: 'README.md'
+  output-dir:
+    description: 'Directory to write generated site files before publishing'
+    required: false
+    default: 'site'
+  branch:
+    description: 'Branch to publish the site to'
+    required: false
+    default: 'gh-pages'
+  include-toc:
+    description: 'Include a table of contents generated from headings'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
