@@ -28,7 +28,18 @@ jobs:
       - uses: bmoler68/readme-to-landing-page@v1
 ```
 
-Enable GitHub Pages in your repository settings and set the source to the `gh-pages` branch. No CLI, no configuration, no local tooling required.
+Do **not** create a `gh-pages` branch yourself, and do **not** point GitHub Pages at `main`. The action publishes a complete static site to the **root** of `gh-pages`. Using `main` (either `/ (root)` or `/docs`) would either serve the source repo instead of the landing page or get overwritten.
+
+### GitHub Pages setup (target repository)
+
+Until `gh-pages` exists, **Settings → Pages** will only list branches that already exist (usually `None` and `main`). That is expected.
+
+1. Leave Pages set to **None** (or skip Pages until after the first successful run).
+2. Add the workflow above and run it once (push to `main`, or **Actions → Run workflow**).
+3. The action creates `gh-pages` if it is missing and pushes `index.html`, `styles.css`, and `assets/` to that branch. Your `main` branch is not changed.
+4. Return to **Settings → Pages**, choose **Deploy from a branch**, then **`gh-pages`** and **`/ (root)`**. Refresh the page if `gh-pages` is not in the list yet.
+
+After that, each push to `main` updates `gh-pages`, and GitHub Pages serves the generated site. No CLI or local tooling is required.
 
 ## Inputs
 
