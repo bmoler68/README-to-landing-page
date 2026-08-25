@@ -16,6 +16,7 @@ End-to-end usage is in the [README-2-landing-page-test](https://github.com/bmole
 - [Add the workflow](#add-the-workflow)
 - [Configure with `with:`](#configure-with-with)
 - [Enable GitHub Pages](#enable-github-pages)
+- [Images in the README](#images-in-the-readme)
 - [What gets published](#what-gets-published)
 - [License](#license)
 
@@ -90,6 +91,19 @@ Until `gh-pages` exists, **Settings → Pages** will only list branches that alr
 4. Return to **Settings → Pages**, choose **Deploy from a branch**, then **`gh-pages`** and **`/ (root)`**. Refresh the page if `gh-pages` is not in the list yet.
 
 After that, each push to `main` updates `gh-pages`, and GitHub Pages serves the generated site.
+
+## Images in the README
+
+Generated HTML is sanitized. `<img>` tags are allowed, but `src` may only use `http` or `https`. Badge and screenshot URLs on GitHub (for example `raw.githubusercontent.com` or shields.io) are kept. Schemes such as `javascript:` and `data:` are removed.
+
+Relative paths such as `![Logo](docs/logo.png)` usually survive sanitization, but those files are **not** copied to `gh-pages`. The published site only contains `index.html`, `styles.css`, and an empty `assets/` folder, so a relative image 404s on Pages.
+
+For images that should appear on the landing page, use an **https** URL. Either of these GitHub forms works (the second redirects to the first):
+
+```markdown
+![Screenshot](https://raw.githubusercontent.com/OWNER/REPO/main/docs/screenshot.png)
+![Screenshot](https://github.com/OWNER/REPO/raw/main/docs/screenshot.png)
+```
 
 ## What gets published
 
