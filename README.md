@@ -1,12 +1,18 @@
 # README to Landing Page
 
-A zero-configuration GitHub Action that converts your repository's `README.md` into a polished static landing page and deploys it to GitHub Pages.
+A GitHub Action that converts your repository's `README.md` into a static landing page and deploys it to GitHub Pages. Add a workflow in **your** repository; no local CLI or tooling is required.
 
-This action is delivered as a **Docker container** — GitHub builds the image from the `Dockerfile` on each run. No container registry (GHCR) is required.
+## Table of contents
 
-## For adopters (30-second setup)
+- [Add the workflow](#add-the-workflow)
+- [Configure with `with:`](#configure-with-with)
+- [Enable GitHub Pages](#enable-github-pages)
+- [What gets published](#what-gets-published)
+- [License](#license)
 
-Add this workflow to your repository at `.github/workflows/landing-page.yml`:
+## Add the workflow
+
+In the **target repository** (the project whose README should become a landing page), create `.github/workflows/landing-page.yml`:
 
 ```yaml
 name: Build Landing Page
@@ -28,86 +34,65 @@ jobs:
       - uses: bmoler68/readme-to-landing-page@v1
 ```
 
-Do **not** create a `gh-pages` branch yourself, and do **not** point GitHub Pages at `main`. The action publishes a complete static site to the **root** of `gh-pages`. Using `main` (either `/ (root)` or `/docs`) would either serve the source repo instead of the landing page or get overwritten.
+Do **not** create a `gh-pages` branch yourself, and do **not** point GitHub Pages at `main`. The action publishes a complete static site to the **root** of `gh-pages`. Using `main` (either `/ (root)` or `/docs`) would serve the source repo instead of the landing page or get overwritten.
 
-### GitHub Pages setup (target repository)
+## Configure with `with:`
+
+The step that uses this action can take optional `with:` keys. Those values are passed into the action at runtime. Omit `with:` entirely to use the defaults (root `README.md`, publish to `gh-pages`, include a table of contents).
+
+```yaml
+      - uses: bmoler68/readme-to-landing-page@v1
+        with:
+          readme-path: README.md
+          output-dir: site
+          branch: gh-pages
+          include-toc: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+| Input | Description | Default |
+|-------|-------------|---------|
+| `readme-path` | Path to the README, relative to the repository root | `README.md` |
+| `output-dir` | Working directory for generated files before they are pushed | `site` |
+| `branch` | Branch that receives the published site | `gh-pages` |
+| `include-toc` | Whether the generated page includes a table of contents (`true` / `false`) | `true` |
+| `github-token` | Token used to push to the publish branch | `${{ github.token }}` |
+
+YAML treats `true`/`false` as booleans. Quote them (`'true'`, `'false'`) so GitHub Actions receives the string the action expects.
+
+You only need `github-token` if you are not using the default `GITHUB_TOKEN`. The workflow still needs `permissions: contents: write` so the token can push.
+
+Example: README in a subdirectory, no table of contents:
+
+```yaml
+      - uses: bmoler68/readme-to-landing-page@v1
+        with:
+          readme-path: docs/README.md
+          include-toc: 'false'
+```
+
+## Enable GitHub Pages
 
 Until `gh-pages` exists, **Settings → Pages** will only list branches that already exist (usually `None` and `main`). That is expected.
 
 1. Leave Pages set to **None** (or skip Pages until after the first successful run).
-2. Add the workflow above and run it once (push to `main`, or **Actions → Run workflow**).
+2. Add the workflow and run it once (push to `main`, or **Actions → Run workflow**).
 3. The action creates `gh-pages` if it is missing and pushes `index.html`, `styles.css`, and `assets/` to that branch. Your `main` branch is not changed.
 4. Return to **Settings → Pages**, choose **Deploy from a branch**, then **`gh-pages`** and **`/ (root)`**. Refresh the page if `gh-pages` is not in the list yet.
 
-After that, each push to `main` updates `gh-pages`, and GitHub Pages serves the generated site. No CLI or local tooling is required.
+After that, each push to `main` updates `gh-pages`, and GitHub Pages serves the generated site.
 
-## Inputs
-
-| Input | Description | Default |
-|-------|-------------|---------|
-| `readme-path` | Path to the README file | `README.md` |
-| `output-dir` | Directory for generated site files | `site` |
-| `branch` | Branch to publish to | `gh-pages` |
-| `include-toc` | Include table of contents | `true` |
-| `github-token` | Token used to push the site | `${{ github.token }}` |
-
-## How it works
+## What gets published
 
 ```
-README.md → Parser → AST → Generator → gh-pages branch → GitHub Pages
+README.md → landing page → gh-pages branch → GitHub Pages
 ```
-
-When a workflow invokes this action, GitHub:
-
-1. Checks out this action repo at the referenced tag (e.g. `@v1`)
-2. **Builds the Docker image** from the `Dockerfile` (cached when possible)
-3. Runs the container against the target repository workspace
-4. The container parses `README.md`, generates HTML, and pushes to `gh-pages`
-
-Generated site structure:
 
 ```
 gh-pages branch:
 ├── index.html
 ├── styles.css
 └── assets/
-```
-
-## Maintaining this action (CI-only)
-
-This repository requires **zero local tooling**. You do not need Node.js, npm, or Docker installed on your machine.
-
-| You do | CI does |
-|--------|---------|
-| Edit source files on GitHub (web editor, Codespaces, or git push) | Run unit tests |
-| Open pull requests | Verify the Docker image builds |
-| Tag releases (`v1`, `v1.0.0`) | — |
-
-There is no `dist/` folder, no bundled JavaScript, and no container registry to manage. The Dockerfile **is** the deliverable — GitHub builds it fresh on each execution.
-
-### Release workflow
-
-1. Make changes to `src/`, `templates/`, or `Dockerfile`
-2. Push to `main` — CI validates tests and Docker build
-3. Create a git tag (e.g. `v1.0.0`)
-4. Consumers reference `@v1` or `@v1.0.0`
-
-## Project structure
-
-```
-├── action.yml              # Points to Dockerfile
-├── Dockerfile              # Built by GitHub on each action run
-├── src/
-│   ├── index.js            # Entry point
-│   ├── parser.js           # Markdown → AST
-│   ├── generator.js        # AST → HTML
-│   ├── publisher.js        # gh-pages deployment
-│   └── utils/sanitize.js   # HTML sanitization
-├── templates/
-│   ├── default.html
-│   └── styles.css
-├── test/
-└── .github/workflows/ci.yml
 ```
 
 ## License
