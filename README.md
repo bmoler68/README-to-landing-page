@@ -1,6 +1,15 @@
 # README to Landing Page
 
+[![CI](https://img.shields.io/github/actions/workflow/status/bmoler68/README-to-landing-page/ci.yml?branch=main&label=CI)](https://github.com/bmoler68/README-to-landing-page/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/bmoler68/README-to-landing-page)](https://github.com/bmoler68/README-to-landing-page/releases/latest)
+[![License](https://img.shields.io/github/license/bmoler68/README-to-landing-page)](https://github.com/bmoler68/README-to-landing-page/blob/main/LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/bmoler68/README-to-landing-page)](https://github.com/bmoler68/README-to-landing-page/commits/main)
+[![Issues](https://img.shields.io/github/issues/bmoler68/README-to-landing-page)](https://github.com/bmoler68/README-to-landing-page/issues)
+![Language](https://img.shields.io/github/languages/top/bmoler68/README-to-landing-page)
+
 A GitHub Action that converts your repository's `README.md` into a static landing page and deploys it to GitHub Pages. Add a workflow in **your** repository; no local CLI or tooling is required.
+
+End-to-end usage is in the [README-2-landing-page-test](https://github.com/bmoler68/README-2-landing-page-test) repository. The site that workflow publishes is at [bmoler68.github.io/README-2-landing-page-test](https://bmoler68.github.io/README-2-landing-page-test/).
 
 ## Table of contents
 
